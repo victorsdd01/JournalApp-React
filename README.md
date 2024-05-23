@@ -8,7 +8,7 @@ Skills:
 - Modular architecture
 - React Hook Form for the forms
 - Material UI and JoyUI for components and layouts
-- Firebase Authentication for the authentication
+- Firebase Authentication for the authentication (Google identity)
 - Firebase Cloudfire Store
 
 
