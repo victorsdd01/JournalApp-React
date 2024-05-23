@@ -11,3 +11,18 @@ export interface GalleryImage {
     title: string,
     img: string
 }
+
+export interface Note {
+    id: string,
+    title: string,
+    body: string,
+    date: number,
+    imageUrl: string[]
+}
+
+export interface JournalState {
+    isSaving: boolean,
+    notes: Note[],
+    active: Note | null,
+    showDialog: boolean
+}

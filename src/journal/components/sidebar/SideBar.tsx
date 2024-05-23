@@ -1,51 +1,45 @@
-import { Grid, Typography, Divider, Box } from '@mui/material';
+import { Grid, Typography, Divider, Box, Avatar } from '@mui/material';
 import PropTypes from 'prop-types';
 import { SideBarList } from './SideBarList';
-import { SideBarItem } from '../../../interfaces/journal/journal-interfaces';
+import { useAppSelector } from '../../../store/store';
+import { useMemo } from 'react';
 
 type SideBarProps = {
   name: string,
 }
 
-const items: SideBarItem[] = [
-  {
-    header: 'January',
-    description: 'Lorem ea in cupidatat adipisicing amet non ex do sint aute pariatur in.',
-    id: 0
-  },
-  {
-    header: 'Febrary',
-    description: 'Anim proident dolor velit Lorem ut dolor laborum.',
-    id: 1
-  },
-  {
-    header: 'March',
-    description: 'Veniam Lorem reprehenderit sint id eiusmod consectetur et est voluptate ipsum aliqua minim et.',
-    id: 2
-  },
-]
-
 export const SideBar = ({name}: SideBarProps): JSX.Element => {
 
+  const {photoUrl} = useAppSelector(state => state.auth)
+
+  const newName = useMemo(() => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+  }, [name])
+
+  const {notes} = useAppSelector(state => state.journal)
+
+  const showPicture = () => {
+    //TODO display a modal to show the picture!!!
+  }
 
   return (
     <>
       <Grid 
         container 
-        item xs={3} 
-        direction={'column'} 
-        sx={{
-          borderRightColor: 'blue'
-        }}
+        item 
+        xs={3}
+        lg={2} 
+        direction={'column'}
       >
-        <Grid className='mt-3' container direction={'row'} justifyContent={'center'} alignContent={'center'}>
+        <Grid className='my-3' container direction={'row'} alignItems={'center'}>
+          <Avatar onClick={showPicture} className='ml-4 mr-2' sx={{height:30, width:30, cursor:'pointer'}} alt={newName} src={photoUrl ? photoUrl : ''} />
           <Typography variant='h6'>
-            {name}
+            {newName}
           </Typography>
         </Grid>
         <Divider orientation='horizontal' variant='middle'/>
-        <Box component={'div'}>
-          <SideBarList items={items} />
+        <Box component={'div'} style={{ overflow: 'auto' }}>
+          <SideBarList items={notes} />
         </Box>
       </Grid>
     </>

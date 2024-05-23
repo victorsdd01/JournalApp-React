@@ -8,14 +8,13 @@ export const NothingSelected = (): JSX.Element=> {
     <>
         <Grid 
           container
-          item 
           direction={'column'}
           alignContent={'center'}
           justifyContent={'center'}
           className="rounded-xl h-full"
           sx={{
             backgroundColor:'primary.main',
-            position:'relative'
+            position:'relative',
           }}
         >
           <Grid container direction={'row'} justifyContent={'center'} alignItems={'center'}>

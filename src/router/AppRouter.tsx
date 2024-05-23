@@ -8,6 +8,7 @@ import { useEffect } from "react"
 import { onAuthStateChanged } from "firebase/auth"
 import { FirebaseAuth } from "../firebase/config"
 import { login, logout } from "../store"
+import { getAllNotes } from '../store/journal/thunks';
 
 
 const data : AuthState = {
@@ -33,6 +34,7 @@ export const AppRouter = (): JSX.Element=> {
       data.displayName = user.displayName
       data.photoUrl = user.photoURL
       dispatch(login(data))
+      dispatch(getAllNotes())
     })
   }, [dispatch])
 

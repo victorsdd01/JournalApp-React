@@ -1,8 +1,21 @@
 import { Add } from "@mui/icons-material"
-import { Grid, Fab } from "@mui/material"
+import { Grid, Fab, Tooltip } from "@mui/material"
+import {  useAppDispatch, useAppSelector } from "../../../store/store"
+import { showModal } from "../../../store"
+// import { startNewNote } from "../../../store/journal/thunks"
 
 
 export const NewNoteButton = (): JSX.Element=> {
+
+  const dispatch = useAppDispatch()
+  const {isSaving, active} = useAppSelector(state => state.journal)
+  const onClick = () => {
+    if(active){
+      console.log('exist a note selected')
+      return
+    }
+    dispatch(showModal(true))    
+  }
   return (
     <>
         <Grid 
@@ -14,11 +27,15 @@ export const NewNoteButton = (): JSX.Element=> {
             alignContent={'center'}
             className="px-3"
           >
-            <Fab 
-              size="medium"
-            >
-              <Add/>
-            </Fab>
+            <Tooltip title="Add new note" arrow>  
+              <Fab 
+                disabled={isSaving}
+                size="medium"
+                onClick={onClick}
+              >
+                <Add/>
+              </Fab>
+            </Tooltip>
         </Grid>
     </>
   )

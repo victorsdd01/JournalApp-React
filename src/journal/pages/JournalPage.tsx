@@ -9,7 +9,7 @@ export const JournalPage = (): JSX.Element => {
   return (
     <>
       <JournalLayout>
-        <Grid container direction={'row'} sx={{ height:'100vh', width:'100%'}}>
+        <Grid container item sx={{height: 'calc(100vh - 60px)'}}>
           <SideBar name={displayName!} />
           <Divider orientation="horizontal"/>
           <Content />
