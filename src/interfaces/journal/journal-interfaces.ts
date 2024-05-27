@@ -1,3 +1,4 @@
+import { Dialogs } from "../../journal"
 
 
 export interface SideBarItem {
@@ -24,5 +25,5 @@ export interface JournalState {
     isSaving: boolean,
     notes: Note[],
     active: Note | null,
-    showDialog: boolean
+    showDialog: Record<Dialogs,boolean>
 }

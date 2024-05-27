@@ -1,12 +1,16 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-import { JournalState, Note } from '../../interfaces'
+import {  JournalState, Note } from '../../interfaces'
+import { Dialogs } from '../../journal'
 
 
 const initialState: JournalState = {
     isSaving: false,
     notes: [],
     active: null,
-    showDialog: false,
+    showDialog: {
+        [Dialogs.NEW_NOTE]: false,
+        [Dialogs.BASIC]: false
+    },
 }
 export const journalSlice = createSlice({
     name: 'journal',
@@ -35,8 +39,11 @@ export const journalSlice = createSlice({
             state.notes = notes
             state.active = null
         },
-        showModal: (state, actions: PayloadAction<boolean> )=> {
-            state.showDialog = actions.payload
+        setImagesUrls: (state, actions: PayloadAction<string[]>) => {
+            state.active!.imageUrl = [...state.active!.imageUrl, ...actions.payload]
+        },
+        showModal: (state, actions: PayloadAction<{id:Dialogs,show:boolean}> )=> {
+            state.showDialog[actions.payload.id] = actions.payload.show;
         }
     },
 })
@@ -47,5 +54,6 @@ export const {
   setSaving,
   updateNote,
   deleteNoteById,
-  showModal
+  showModal,
+  setImagesUrls
 } = journalSlice.actions

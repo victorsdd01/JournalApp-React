@@ -1,76 +1,27 @@
 import { SaveOutlined } from "@mui/icons-material"
-import { CircularProgress, Grid, TextField, Typography } from "@mui/material"
-import { GalleryImage, Note } from "../../../interfaces/";
+import { Button, CircularProgress, Grid, TextField, Typography } from "@mui/material"
+import { Note } from "../../../interfaces/";
 import { Gallery, NewNoteButton } from "..";
 import { AppDispatch, useAppDispatch, useAppSelector } from "../../../store/store";
 import { Form } from '../../../auth/components/Form';
 import { useForm } from "react-hook-form";
 import { useEffect, useMemo } from "react";
 import { setActiveNote } from "../../../store";
-import { updateCurrentNote } from "../../../store/journal/thunks";
+import { updateCurrentNote, uploadPictures } from "../../../store/journal/thunks";
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-const itemData: GalleryImage[] = [
-  {
-    id:0,
-    img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    title: 'Breakfast',
-  },
-  {
-    id:2,
-    img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-    title: 'Burger',
-  },
-  {
-    id:3,
-    img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-    title: 'Camera',
-  },
-  {
-    id:4,
-    img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-    title: 'Coffee',
-  },
-  {
-    id:5,
-    img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-    title: 'Hats',
-  },
-  {
-    id:6,
-    img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-    title: 'Honey',
-  },
-  {
-    id:7,
-    img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-    title: 'Basketball',
-  },
-  {
-    id:8,
-    img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-    title: 'Fern',
-  },
-  {
-    id:9,
-    img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-    title: 'Mushrooms',
-  },
-  {
-    id:10,
-    img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-    title: 'Tomato basil',
-  },
-  {
-    id:11,
-    img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-    title: 'Sea star',
-  },
-  {
-    id:12,
-    img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-    title: 'Bike',
-  },
-]
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+})
 
 
 export const SelectedNote = (): JSX.Element => {
@@ -119,7 +70,13 @@ export const SelectedNote = (): JSX.Element => {
     dispatch(setActiveNote(data))
     dispatch(updateCurrentNote())
   })
-  
+
+  const onSelectedFiles = ({target} : React.ChangeEvent<HTMLInputElement>) => {
+    if (target.files) {
+      const images = Array.from(target.files)
+      dispatch(uploadPictures(images))
+    }
+  }
 
   if(isSaving) return <Grid container item direction={'column'} justifyContent={'center'} alignContent={'center'}> <CircularProgress /></Grid>
 
@@ -128,23 +85,40 @@ export const SelectedNote = (): JSX.Element => {
     <>
       <Grid 
       container
+      padding={2}
       direction={'column'}
-      className="rounded-xl bg-white"
-      sx={{position: 'relative', height:'100%'}}
+      className="rounded-xl bg-white box-shadow"
+      sx={{position: 'relative', height:'100%', width:'100%'}}
       >
-        <Grid container direction={'row'} justifyContent={'space-between'} alignContent={'center'}>
-          <Typography variant="h3">
-              { dateString }
-          </Typography>
-          <Grid container  item direction={'column'} xs={1} justifyContent={'center'}>
-            <Grid onClick={onUpdate} container item direction={'row'} justifyContent={'end'} sx={{cursor:'pointer'}}>
-                <SaveOutlined />
-                <Typography className="mx-3" variant="button" color={'primary.main'}>Save</Typography>
-            </Grid>
-          </Grid>
-        </Grid>
         <Form onSubmit={()=> onUpdate}>  
-          <Grid className="mt-3" container direction={'row'}>
+          <Grid container item direction={'row'} justifyContent={'space-between'} alignContent={'center'}>
+                <Grid container item xs={6}>
+                  <Typography variant="h3">
+                      { dateString }
+
+                  </Typography>
+                </Grid>
+                <Grid container item  xs={6} justifyContent={'end'}>
+                  <Button
+                    component="label"
+                    variant="contained"
+                    tabIndex={-1}
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload file
+                    <VisuallyHiddenInput type="file" multiple {...register('imageUrl')} onChange={onSelectedFiles} />
+                  </Button>
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveOutlined />}
+                    onClick={onUpdate}
+                    sx={{marginLeft:'5px'}}
+                  >
+                    Save
+                  </Button>
+                </Grid>
+          </Grid>
+          <Grid container item direction={'row'} sx={{marginTop:'10px', marginBottom:'10px'}}>
             <TextField 
               variant="filled" 
               fullWidth 
@@ -161,7 +135,7 @@ export const SelectedNote = (): JSX.Element => {
               helperText={errors.title ? errors.title.message?.toString() : ''}
             />
           </Grid>
-          <Grid className="mt-3" container direction={'row'}>
+          <Grid container item direction={'row'}>
             <TextField 
               variant="filled" 
               fullWidth 
@@ -179,8 +153,8 @@ export const SelectedNote = (): JSX.Element => {
               helperText={errors.body ? errors.body.message?.toString() : ''}
             />
           </Grid>
-          <Grid className="mt-2" container direction={'row'}>
-            <Gallery images={itemData} />
+          <Grid container item direction={'row'}>
+            <Gallery images={active?.imageUrl ?? []} />
           </Grid>
         </Form>
         <NewNoteButton />

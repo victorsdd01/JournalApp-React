@@ -12,8 +12,10 @@ type FormProps = {
 export const Form = ({children, onSubmit}: FormProps) => {
   return (
     <form onSubmit={onSubmit}>
-        <Grid container direction={'column'}>
+        <Grid container item sx={{height:'100%'}}>
+          <Grid container item sx={{height:'100%', width:'100%'}}>
             { children }
+          </Grid>
         </Grid>
     </form>
   )

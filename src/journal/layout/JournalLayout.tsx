@@ -7,20 +7,23 @@ import { useForm } from "react-hook-form";
 import { Note } from "../../interfaces";
 import { showModal } from "../../store";
 import { startNewNote } from "../../store/journal/thunks";
+import { Dialogs } from "../enums/enums";
 
 
 type JournalLayoutProps = {
     children: ReactNode
 }
+
 export const JournalLayout = ({children}: JournalLayoutProps) => {
 
+  const id: Dialogs = Dialogs.NEW_NOTE
   const {open, message, variant, color, vertical, horizontal} = useAppSelector( state => state.notifications)
-  const {showDialog} = useAppSelector(state =>  state.journal)
+  const {showDialog} = useAppSelector(state => state.journal)
   const {register, handleSubmit, formState : {errors}} = useForm<Note>()
   const dispatch : AppDispatch = useAppDispatch()
 
   const onSubmit = handleSubmit((note: Note) => {
-    dispatch(startNewNote(note))
+    dispatch(startNewNote(note, id))
   })
 
   return (
@@ -36,7 +39,8 @@ export const JournalLayout = ({children}: JournalLayoutProps) => {
               horizontal={horizontal}
             />
             <CustomDialog 
-              show={showDialog}
+              id={id}
+              show={showDialog[id]}
               paperProps={{
                 component: 'form',
                 onSubmit: onSubmit
@@ -84,7 +88,7 @@ export const JournalLayout = ({children}: JournalLayoutProps) => {
               }
               actions={
                 <>
-                  <Button sx={{ marginRight:1}} color="error" variant="contained" onClick={() => dispatch(showModal(false)) }>Cancel</Button>
+                  <Button sx={{ marginRight:1}} color="error" variant="contained" onClick={() => dispatch(showModal({id, show:false})) }>Cancel</Button>
                   <Button color="primary" variant="contained" type="submit" onClick={() => onSubmit}>Add</Button>
                 </>
               }

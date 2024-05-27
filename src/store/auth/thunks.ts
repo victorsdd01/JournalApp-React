@@ -21,7 +21,6 @@ import { AppDispatch } from "../store"
     email: null,
     displayName: null,
     photoUrl: null,
-    // errorMessage: null,
  }
 
  const snackBar : NotificationState = {

@@ -34,7 +34,7 @@ export const SideBarListItem = ({ item, color }: SideBarListItemProps): JSX.Elem
             backgroundColor: color,
             borderRadius:5,
             overflowX: 'hidden',
-            overflowY:'hidden'
+            overflowY:'hidden',
         }} 
         container 
         item 

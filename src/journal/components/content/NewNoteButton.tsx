@@ -2,19 +2,15 @@ import { Add } from "@mui/icons-material"
 import { Grid, Fab, Tooltip } from "@mui/material"
 import {  useAppDispatch, useAppSelector } from "../../../store/store"
 import { showModal } from "../../../store"
-// import { startNewNote } from "../../../store/journal/thunks"
+import { Dialogs } from "../../enums/enums"
 
 
 export const NewNoteButton = (): JSX.Element=> {
 
   const dispatch = useAppDispatch()
-  const {isSaving, active} = useAppSelector(state => state.journal)
+  const {isSaving} = useAppSelector(state => state.journal)
   const onClick = () => {
-    if(active){
-      console.log('exist a note selected')
-      return
-    }
-    dispatch(showModal(true))    
+    dispatch(showModal({id:Dialogs.NEW_NOTE, show:true}))    
   }
   return (
     <>
@@ -25,7 +21,7 @@ export const NewNoteButton = (): JSX.Element=> {
             bottom={10}
             justifyContent={'end'}
             alignContent={'center'}
-            className="px-3"
+            className="pr-8"
           >
             <Tooltip title="Add new note" arrow>  
               <Fab 
