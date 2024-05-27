@@ -1,10 +1,12 @@
-import { doc, setDoc, collection, getDocs, deleteDoc} from "firebase/firestore/lite"
+import { doc, setDoc, collection, getDocs, deleteDoc, updateDoc} from "firebase/firestore/lite"
 import { AppDispatch, RootState} from "../store"
 import { FirebaseDb } from "../../firebase/config"
 import { Note, NotificationState } from "../../interfaces"
-import { addNewNote, deleteNoteById, setActiveNote, setNotes, setSaving, showModal, updateNote } from "./journalSlice"
+import { addNewNote, deleteNoteById, setActiveNote, setImagesUrls, setNotes, setSaving, showModal, updateNote } from "./journalSlice"
 import { FirebaseError } from "firebase/app"
 import { showSnackBar } from "../notifications/notificationsSlice"
+import { Dialogs } from "../../journal"
+import { fileUpload } from "../../helpers"
 
 
 const snackBar : NotificationState = {
@@ -30,17 +32,17 @@ const onSuccess = (dispatch: AppDispatch, message: string) => {
 }
 
 
-export const startNewNote = ({title, body}: Note) => (dispatch: AppDispatch, getState: () => RootState) => {
+export const startNewNote = ({title, body}: Note, id: Dialogs) => (dispatch: AppDispatch, getState: () => RootState) => {
     
     dispatch(setSaving(true))
     const { uid } = getState().auth
 
     const newNote: Note = {
         id: "",
-        title,
-        body,
+        title:title.trim() ,
+        body:body.trim() ,
         date: new Date().getTime(),
-        imageUrl: ['']
+        imageUrl: []
     }
     const newDoc = doc(collection(FirebaseDb, `/${uid}/journal/notes`))
 
@@ -50,7 +52,7 @@ export const startNewNote = ({title, body}: Note) => (dispatch: AppDispatch, get
             dispatch(addNewNote(newNote))
             dispatch(setActiveNote(newNote))
             snackBar.message= 'Note added correctly!'
-            dispatch(showModal(false))
+            dispatch(showModal({id,show:false}))
             dispatch(showSnackBar(snackBar))
         }).catch((error : FirebaseError) => {
             onError(dispatch, error)
@@ -75,7 +77,7 @@ export const getAllNotes = () => (dispatch: AppDispatch, getState: () => RootSta
                 title: doc.data().title,
                 body: doc.data().body,
                 date:doc.data().date,
-                imageUrl: []
+                imageUrl: doc.data().imageUrl
             })
         })
 
@@ -132,4 +134,37 @@ export const deleteNote = () => (dispatch: AppDispatch, getState: ()=> RootState
      .finally(() => {
         dispatch(setSaving(false))
      })
+}
+
+export const uploadPictures = (files : File[]) => (dispatch: AppDispatch, getState: ()=> RootState) => {
+    dispatch(setSaving(true))
+
+    const {uid} = getState().auth
+    const { active }  = getState().journal
+    const uploadPromises: Promise<string>[] = []
+
+    files.forEach(file => {
+        uploadPromises.push(fileUpload(file))
+    })
+    const docRef = doc(FirebaseDb, `${uid}/journal/notes/${active!.id}`)
+
+    Promise.all<string>(uploadPromises)
+        .then(pictures => {
+            updateDoc(docRef, {imageUrl: [...pictures]})
+                .then(()=> {
+                    dispatch(setImagesUrls(pictures))
+                    snackBar.message = 'Uploaded successfully'
+                    dispatch(showSnackBar(snackBar))
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+        }).catch(err => {
+            snackBar.color='danger'
+            snackBar.message = 'Error trying to upload images.'
+            dispatch(showSnackBar(snackBar))
+            console.error(err)
+        }).finally(()=>{
+            dispatch(setSaving(false))
+        })
 }

@@ -1,15 +1,20 @@
 import { Close } from '@mui/icons-material';
 import { Dialog, Slide, Grid, IconButton, Typography } from '@mui/material';
 import { TransitionProps } from "@mui/material/transitions"
-import { ReactNode, forwardRef, useEffect, useState } from "react"
+import { ReactNode, forwardRef, useEffect, useState} from "react"
+import { AppDispatch, useAppDispatch } from '../store/store';
+import { showModal } from '../store';
+import { Dialogs } from '../journal';
 
 
 interface CustomDialogProps {
+    id: Dialogs,
     show: boolean,
     title: string,
     content: ReactNode,
     actions?: ReactNode,
     paperProps?: object,
+    justifyContent?: string,
 }
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -21,14 +26,20 @@ const Transition = forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />
   })
 
-export const CustomDialog = ({show, title, content, actions, paperProps} : CustomDialogProps): JSX.Element => {
+export const CustomDialog = ({id, show, title, content, actions, paperProps, justifyContent} : CustomDialogProps): JSX.Element => {
 
-  const [open, setOpen] = useState<boolean>(false)
+  const dispatch : AppDispatch = useAppDispatch()
+
+  const [open, setOpen] = useState<boolean>(show);
 
   useEffect(() => {
-    if(show) return setOpen(true)
-    setOpen(false)
-  } ,[show])
+    setOpen(show);
+  }, [show]);
+
+  const handleClose = () => {
+    dispatch(showModal({ id, show: false }));
+    setOpen(false);
+  };
 
   return (
     <Dialog 
@@ -42,7 +53,7 @@ export const CustomDialog = ({show, title, content, actions, paperProps} : Custo
         PaperProps={{...paperProps}}
     >
       <Grid container item direction={'row'} paddingTop={1} paddingRight={1} justifyContent={'end'}>
-        <IconButton onClick={() => setOpen(false)}>
+        <IconButton onClick={handleClose}>
           <Close></Close>
         </IconButton>
       </Grid>
@@ -55,7 +66,7 @@ export const CustomDialog = ({show, title, content, actions, paperProps} : Custo
           </Typography>
         {/* </DialogTitle> */}
       </Grid>
-      <Grid container item direction={'row'} paddingLeft={2} paddingRight={2}>
+      <Grid container item direction={'row'} paddingLeft={2} paddingRight={2} justifyContent={justifyContent || 'start'}>
         {/* <DialogContent> */}
           {
             content

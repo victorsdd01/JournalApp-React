@@ -1,25 +1,25 @@
-import { Grid, ImageList } from "@mui/material"
-import { GalleryImage } from "../../../interfaces/journal/journal-interfaces"
+import { ImageList } from "@mui/material"
+// import { GalleryImage } from "../../../interfaces/journal/journal-interfaces"
 import { GalleryCard } from "./GalleryCard"
 
 type GalleryProps = {
-    images: GalleryImage[],
+    images: string[],
 }
 export const Gallery = ({ images } : GalleryProps): JSX.Element=> {
+  
   return (
     <>
-    <Grid container item direction={'column'} sx={{ height:'100%'}}>
-        <ImageList 
-          className="rounded-lg"
-          sx={{width:'100%', height:'100%'}} 
-          cols={12} 
-          rowHeight={'auto'}>
-            {images.map(image => 
-                <GalleryCard key={image.id} image={image} />
-              )
-            }
-        </ImageList>
-    </Grid>
+      <ImageList 
+        sx={{ height: '100%', overflowY: 'auto' }}
+        className="rounded-lg mt-2"
+        cols={10}
+        rowHeight={'auto'} 
+      >
+          {images.map(image => 
+              <GalleryCard key={image} image={image} />
+            )
+          }
+      </ImageList>
     </>
   )
 }
