@@ -10,5 +10,6 @@ Skills:
 - Material UI and JoyUI for components and layouts
 - Firebase Authentication for the authentication (Google identity)
 - Firebase Cloudfire Store
+- Jest and react testing library for test
 
 
